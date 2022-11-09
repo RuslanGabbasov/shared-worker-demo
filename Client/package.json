@@ -1,0 +1,14 @@
+{
+  "name": "SharedWorkerDemo",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "packageManager": "yarn@3.2.4",
+  "devDependencies": {
+    "esbuild": "^0.15.13"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
