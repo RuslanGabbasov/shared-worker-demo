@@ -4,6 +4,6 @@ const res = require('esbuild').buildSync({
     minify: true,
     format: 'cjs',
     sourcemap: true,
-    outfile: 'dist/output.js',
+    outfile: 'public/bundle.js',
     // external: ['react', 'react-dom'],
 })

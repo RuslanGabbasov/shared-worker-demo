@@ -1,14 +1,18 @@
 {
-  "name": "SharedWorkerDemo",
+  "name": "shared-worker-demo",
   "version": "1.0.0",
   "main": "index.ts",
   "license": "MIT",
   "packageManager": "yarn@3.2.4",
   "devDependencies": {
+    "@types/react": "18.0.25",
+    "@types/react-dom": "18.0.8",
+    "@types/react-router-dom": "^5.3.3",
     "esbuild": "^0.15.13"
   },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.3"
   }
 }
