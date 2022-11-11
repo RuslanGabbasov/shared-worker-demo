@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "generated",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "lib": ["esnext", "dom", "dom.iterable"],
     "module": "esnext",
     "moduleResolution": "node",
@@ -25,6 +25,7 @@
     "strictFunctionTypes": true,
     "target": "esnext",
     "skipLibCheck": true,
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
   "exclude": [
     "node_modules",

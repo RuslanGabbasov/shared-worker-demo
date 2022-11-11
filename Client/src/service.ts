@@ -16,3 +16,28 @@
         }
     }
 })();
+
+const webSocketWorker = new SharedWorker('/worker.js');
+
+const sendMessageToSocket = (message: any) => {
+    webSocketWorker.port.postMessage({
+        action: 'send',
+        value: message,
+    });
+};
+
+webSocketWorker.port.addEventListener('message', ({ data }) => {
+    navigator.serviceWorker.controller?.postMessage({data});
+    console.log(data);
+});
+
+webSocketWorker.port.start();
+
+window.addEventListener('beforeunload', () => {
+    webSocketWorker.port.postMessage({
+        action: 'unload',
+        value: null,
+    });
+
+    webSocketWorker.port.close();
+});

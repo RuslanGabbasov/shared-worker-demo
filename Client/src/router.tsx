@@ -2,33 +2,28 @@ import React from "react";
 import {
     createBrowserRouter,
     RouterProvider,
-    Route,
-    Link,
 } from "react-router-dom";
+import Tasks from "./components/tasks";
+import Graphs from "./components/graphs";
+import Tables from "./components/tables";
+import Main from "./components/main";
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: (
-            <div>
-                <h1>Main</h1>
-                <Link to="tasks" target="_blank">Tasks</Link>
-                <Link to="graphs" target="_blank">Graphs</Link>
-                <Link to="tables" target="_blank">Tables</Link>
-            </div>
-        ),
+        element: <Main />,
     },
     {
         path: "tasks",
-        element: <h1>Tasks</h1>,
+        element: <Tasks />,
     },
     {
         path: "graphs",
-        element: <h1>Graphs</h1>,
+        element: <Graphs />,
     },
     {
         path: "tables",
-        element: <h1>Tables</h1>,
+        element: <Tables />,
     },
 ]);
 

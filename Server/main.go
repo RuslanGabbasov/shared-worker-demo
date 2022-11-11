@@ -3,6 +3,7 @@ package main
 import (
 	"Server/ws"
 	"fmt"
+	"time"
 )
 
 func main() {
@@ -11,6 +12,7 @@ func main() {
 	})
 
 	for {
-		server.WriteMessage([]byte("Hello, world!"))
+		server.WriteMessage([]byte("{\"type\":\"message\",\"data\":\"Hello\"}"))
+		time.Sleep(time.Second * 10)
 	}
 }
