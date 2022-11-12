@@ -3,10 +3,8 @@ const connectedPorts = new Set();
 
 socket.addEventListener('open', () => {
     const data = JSON.stringify({
-        "time": 123456,
-        "channel": "futures.tickers",
-        "event": "subscribe",
-        "payload": ["test"]
+        "time": Date.now(),
+        "client": Math.random().toString(36).substring(7),
     });
 
     socket.send(data);
@@ -34,9 +32,7 @@ self.onconnect = (e) => {
 
         switch (action) {
             case 'send': socket.send(JSON.stringify(value)); break;
-            case 'unload': {
-                connectedPorts.delete(port);
-            }
+            case 'unload': connectedPorts.delete(port); break;
         }
     });
 

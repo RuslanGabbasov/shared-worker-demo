@@ -1,8 +1,8 @@
 package ws
 
 import (
-	"fmt"
 	"github.com/gorilla/websocket"
+	spaserver "github.com/roberthodgen/spa-server"
 	"net/http"
 )
 
@@ -24,14 +24,10 @@ func StartServer(handleMessage func(message []byte)) *Server {
 	}
 
 	http.HandleFunc("/ws", server.echo)
-	http.HandleFunc("/", server.start)
+	http.Handle("/", spaserver.SpaHandler("../Client/public/", "index.html"))
 	go http.ListenAndServe(":8080", nil)
 
 	return &server
-}
-
-func (server *Server) start(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Demo websocket server"))
 }
 
 func (server *Server) echo(w http.ResponseWriter, r *http.Request) {
@@ -58,7 +54,6 @@ func (server *Server) echo(w http.ResponseWriter, r *http.Request) {
 
 func (server *Server) WriteMessage(message []byte) {
 	for conn := range server.clients {
-		fmt.Println(conn)
 		conn.WriteMessage(websocket.TextMessage, message)
 	}
 }

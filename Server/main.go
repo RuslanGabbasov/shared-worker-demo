@@ -1,8 +1,11 @@
 package main
 
 import (
+	"Server/data"
 	"Server/ws"
+	"encoding/json"
 	"fmt"
+	"math/rand"
 	"time"
 )
 
@@ -12,7 +15,16 @@ func main() {
 	})
 
 	for {
-		server.WriteMessage([]byte("{\"type\":\"message\",\"data\":\"Hello\"}"))
+		var message []byte
+		switch rand.Intn(3) {
+		case 0:
+			message, _ = json.Marshal(data.GetNextGraph())
+		case 1:
+			message, _ = json.Marshal(data.GetNextTask())
+		case 2:
+			message, _ = json.Marshal(data.GetNextData())
+		}
+		server.WriteMessage(message)
 		time.Sleep(time.Second * 10)
 	}
 }

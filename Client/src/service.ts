@@ -15,6 +15,11 @@
             console.error(`Registration failed with ${error}`);
         }
     }
+    try {
+        await Notification.requestPermission();
+    } catch (error) {
+        console.error(`Request notification permission faild with ${error}`);
+    }
 })();
 
 const webSocketWorker = new SharedWorker('/worker.js');
@@ -27,7 +32,9 @@ const sendMessageToSocket = (message: any) => {
 };
 
 webSocketWorker.port.addEventListener('message', ({ data }) => {
-    navigator.serviceWorker.controller?.postMessage({data});
+    navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification(data.type, {data});
+    });
     console.log(data);
 });
 
