@@ -1,3 +1,17 @@
+const channel = new BroadcastChannel('ws-events');
+
+channel.addEventListener('message', ({data}) => {
+    const title = data.type === 'task' ? data.name : data.type === 'table' ? `New data about ${data.name}` : `New detection ${Math.round(data.x * 10E-16) / 100}°, ${Math.round(data.y * 10E-16) / 100}°`;
+    self.registration.showNotification(title,
+        {
+            data,
+            icon: `/icons/${data.type}.png`,
+            tag: data.type,
+            renotify: true,
+            requireInteraction: true,
+        });
+});
+
 self.addEventListener('activate', (event) => {
     console.log("Service worker activated");
     event.waitUntil((async () => {
@@ -29,7 +43,12 @@ self.addEventListener('notificationclick', function(event) {
 
     event.waitUntil((async () => {
         const clients = await self.clients.matchAll({includeUncontrolled: false});
-        await clients.find(c => c.url.includes(data.type))?.focus();
+        const existsTab = clients.find(c => c.url.includes(data.type));
+        if (existsTab) {
+            await existsTab.focus();
+        } else {
+            await self.clients.openWindow(`/${data.type}s`);
+        }
         console.log('Service worker notification click', event);
     })());
 });

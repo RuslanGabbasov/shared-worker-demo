@@ -1,3 +1,5 @@
+import {globalState} from "./state";
+
 (async (): Promise<void> => {
     if ("serviceWorker" in navigator) {
         try {
@@ -32,10 +34,23 @@ const sendMessageToSocket = (message: any) => {
 };
 
 webSocketWorker.port.addEventListener('message', ({ data }) => {
-    navigator.serviceWorker.ready.then((registration) => {
-        registration.showNotification(data.type, {data});
-    });
+    if (location.href.includes(data.type)) {
+        document.title = data.type === 'task' ? data.name : data.type === 'table'
+            ? `New data about ${data.name}`
+            : `New detection ${Math.round(data.x * 10E-16) / 100}°, ${Math.round(data.y * 10E-16) / 100}°`;
+    }
     console.log(data);
+    switch (data.type) {
+        case 'task':
+            globalState.set((state) => ({...state, tasks: [...state.tasks, data]}));
+            break;
+        case 'graph':
+            globalState.set((state) => ({...state, graphs: [...state.graphs, data]}));
+            break;
+        case 'table':
+            globalState.set((state) => ({...state, tables: [...state.tables, data]}));
+            break;
+    }
 });
 
 webSocketWorker.port.start();

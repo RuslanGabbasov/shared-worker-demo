@@ -25,6 +25,6 @@ func main() {
 			message, _ = json.Marshal(data.GetNextData())
 		}
 		server.WriteMessage(message)
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 1)
 	}
 }

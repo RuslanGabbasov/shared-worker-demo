@@ -1,5 +1,6 @@
-const socket = new WebSocket('ws://localhost:8080/ws');
+const socket = new WebSocket('ws://localhost:3000/ws');
 const connectedPorts = new Set();
+const channel = new BroadcastChannel('ws-events');
 
 socket.addEventListener('open', () => {
     const data = JSON.stringify({
@@ -8,19 +9,17 @@ socket.addEventListener('open', () => {
     });
 
     socket.send(data);
+    console.log('Opened connection');
 });
 
 socket.addEventListener('message', ({ data }) => {
     try {
         const payload = JSON.parse(data);
         connectedPorts.forEach(port => port.postMessage(payload));
+        channel.postMessage(payload);
     } catch (e) {
         console.log(e);
     }
-});
-
-socket.addEventListener('open', (event) => {
-    console.log('Opened connection');
 });
 
 self.onconnect = (e) => {

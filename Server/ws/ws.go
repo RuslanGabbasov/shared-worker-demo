@@ -25,7 +25,7 @@ func StartServer(handleMessage func(message []byte)) *Server {
 
 	http.HandleFunc("/ws", server.echo)
 	http.Handle("/", spaserver.SpaHandler("../Client/public/", "index.html"))
-	go http.ListenAndServe(":8080", nil)
+	go http.ListenAndServe(":3000", nil)
 
 	return &server
 }
