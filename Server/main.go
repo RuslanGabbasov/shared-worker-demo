@@ -5,25 +5,33 @@ import (
 	"Server/ws"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
+	"net"
 	"time"
 )
 
 func main() {
-	server := ws.StartServer(func(message []byte) {
-		fmt.Println(string(message))
+	server := ws.StartServer(func(remoteAddr net.Addr, message []byte) {
+		fmt.Printf("Message from %s: %s\n", remoteAddr.String(), message)
 	})
 
 	for {
-		var message []byte
+		var messageData interface{}
 		switch rand.Intn(3) {
 		case 0:
-			message, _ = json.Marshal(data.GetNextGraph())
+			messageData = data.GetNextGraph()
 		case 1:
-			message, _ = json.Marshal(data.GetNextTask())
+			messageData = data.GetNextTask()
 		case 2:
-			message, _ = json.Marshal(data.GetNextData())
+			messageData = data.GetNextData()
 		}
+
+		message, err := json.Marshal(messageData)
+		if err != nil {
+			log.Fatalf("can't serialize ws message: %v", err)
+		}
+
 		server.WriteMessage(message)
 		time.Sleep(time.Second * 1)
 	}

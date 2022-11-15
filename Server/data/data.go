@@ -5,9 +5,13 @@ import (
 	"time"
 )
 
+type message struct {
+	Type string `json:"type"`
+	Id   int    `json:"id"`
+}
+
 type Task struct {
-	Type        string    `json:"type"`
-	Id          int       `json:"id"`
+	message
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	DueDate     time.Time `json:"dueDate"`
@@ -15,21 +19,19 @@ type Task struct {
 }
 
 type Graph struct {
-	Type  string `json:"type"`
-	Id    int    `json:"id"`
-	X     int    `json:"x"`
-	Y     int    `json:"y"`
-	Value int    `json:"value"`
+	message
+	X     int `json:"x"`
+	Y     int `json:"y"`
+	Value int `json:"value"`
 }
 
 type Data struct {
-	Type  string `json:"type"`
-	Id    int    `json:"id"`
+	message
 	Name  string `json:"name"`
 	Value int    `json:"value"`
 }
 
-var tasknames = []string{
+var taskNames = []string{
 	"Task 1",
 	"Another task",
 	"Different task",
@@ -94,13 +96,22 @@ var cities = []string{
 }
 
 func GetNextTask() Task {
-	return Task{"task", rand.Int(), tasknames[rand.Intn(len(tasknames))], descriptions[rand.Intn(len(descriptions))], time.Now(), performers[rand.Intn(len(performers))]}
+	return Task{message{"task", rand.Int()},
+		taskNames[rand.Intn(len(taskNames))],
+		descriptions[rand.Intn(len(descriptions))],
+		time.Now(),
+		performers[rand.Intn(len(performers))]}
 }
 
 func GetNextGraph() Graph {
-	return Graph{"graph", rand.Int(), rand.Int(), rand.Int(), rand.Int()}
+	return Graph{message{"graph", rand.Int()},
+		rand.Int(),
+		rand.Int(),
+		rand.Int()}
 }
 
 func GetNextData() Data {
-	return Data{"table", rand.Int(), cities[rand.Intn(len(cities))], rand.Int()}
+	return Data{message{"table", rand.Int()},
+		cities[rand.Intn(len(cities))],
+		rand.Int()}
 }

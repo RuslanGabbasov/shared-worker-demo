@@ -3,6 +3,8 @@ package ws
 import (
 	"github.com/gorilla/websocket"
 	spaserver "github.com/roberthodgen/spa-server"
+	"log"
+	"net"
 	"net/http"
 )
 
@@ -13,19 +15,24 @@ var upgrader = websocket.Upgrader{
 }
 
 type Server struct {
-	clients       map[*websocket.Conn]bool
-	handleMessage func(message []byte)
+	connections   *connectionStore
+	handleMessage func(from net.Addr, message []byte)
 }
 
-func StartServer(handleMessage func(message []byte)) *Server {
+func StartServer(handleMessage func(from net.Addr, message []byte)) *Server {
 	server := Server{
-		make(map[*websocket.Conn]bool),
+		newConnectionStore(),
 		handleMessage,
 	}
 
 	http.HandleFunc("/ws", server.echo)
 	http.Handle("/", spaserver.SpaHandler("../Client/public/", "index.html"))
-	go http.ListenAndServe(":3000", nil)
+	go func() {
+		err := http.ListenAndServe(":3000", nil)
+		if err != nil {
+			log.Fatalf("can't start server: %v", err)
+		}
+	}()
 
 	return &server
 }
@@ -33,27 +40,33 @@ func StartServer(handleMessage func(message []byte)) *Server {
 func (server *Server) echo(w http.ResponseWriter, r *http.Request) {
 	connection, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		w.Write([]byte("The client is not using the websocket protocol: 'upgrade' token not found in 'Connection' header"))
+		_, _ = w.Write([]byte("The client is not using the websocket protocol: 'upgrade' token not found in 'Connection' header"))
 		return
 	}
-	defer connection.Close()
 
-	server.clients[connection] = true
-	defer delete(server.clients, connection)
+	go func() {
+		defer connection.Close()
 
-	for {
-		mt, message, err := connection.ReadMessage()
+		server.connections.Add(connection)
+		defer server.connections.Remove(connection)
 
-		if err != nil || mt == websocket.CloseMessage {
-			break
+		for {
+			mt, message, err := connection.ReadMessage()
+
+			if err != nil || mt == websocket.CloseMessage {
+				break
+			}
+
+			go server.handleMessage(connection.RemoteAddr(), message)
 		}
-
-		go server.handleMessage(message)
-	}
+	}()
 }
 
 func (server *Server) WriteMessage(message []byte) {
-	for conn := range server.clients {
-		conn.WriteMessage(websocket.TextMessage, message)
-	}
+	server.connections.ForEach(func(conn *websocket.Conn) {
+		err := conn.WriteMessage(websocket.TextMessage, message)
+		if err != nil {
+			log.Printf("ERROR can't write message to a client %s: %v", conn.RemoteAddr().String(), err)
+		}
+	})
 }
