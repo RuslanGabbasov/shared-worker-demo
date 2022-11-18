@@ -15,6 +15,7 @@ h1 {
     gap: 30px;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .main a {

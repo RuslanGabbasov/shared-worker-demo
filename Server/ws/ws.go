@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 )
 
 var upgrader = websocket.Upgrader{
@@ -25,10 +26,16 @@ func StartServer(handleMessage func(from net.Addr, message []byte)) *Server {
 		handleMessage,
 	}
 
+	port := ":80"
+
+	if os.Args[1] == "dev" {
+		port = ":3000"
+	}
+
 	http.HandleFunc("/ws", server.echo)
-	http.Handle("/", spaserver.SpaHandler("../Client/public/", "index.html"))
+	http.Handle("/", spaserver.SpaHandler("./Client/public/", "index.html"))
 	go func() {
-		err := http.ListenAndServe(":3000", nil)
+		err := http.ListenAndServe(port, nil)
 		if err != nil {
 			log.Fatalf("can't start server: %v", err)
 		}

@@ -1,4 +1,4 @@
-const socket = new WebSocket('ws://localhost:3000/ws');
+const socket = new WebSocket(location.host === 'localhost' ? 'ws://localhost:3000/ws' : `wss://${location.host}/ws`);
 const connectedPorts = new Set();
 const channel = new BroadcastChannel('ws-events');
 
