@@ -1,6 +1,7 @@
 const socket = new WebSocket(location.host === 'localhost' ? 'ws://localhost:3000/ws' : `wss://${location.host}/ws`);
 const connectedPorts = new Set();
 const channel = new BroadcastChannel('ws-events');
+const receivedData = [];
 
 socket.addEventListener('open', () => {
     const data = JSON.stringify({
@@ -15,6 +16,7 @@ socket.addEventListener('open', () => {
 socket.addEventListener('message', ({ data }) => {
     try {
         const payload = JSON.parse(data);
+        receivedData.push(payload);
         connectedPorts.forEach(port => port.postMessage(payload));
         channel.postMessage(payload);
     } catch (e) {
@@ -25,6 +27,9 @@ socket.addEventListener('message', ({ data }) => {
 self.onconnect = (e) => {
     const port = e.ports[0];
     connectedPorts.add(port);
+
+    // WARN: Так сделано только для демо, в реальном решении надо сделать отдельный метод для получения данных на текущий момент в открытой вкладке
+    receivedData.forEach(data => port.postMessage(data));
 
     port.addEventListener('message', (e) => {
         const { action, value } = e.data || {};
